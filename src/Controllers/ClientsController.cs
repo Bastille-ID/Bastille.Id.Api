@@ -27,7 +27,6 @@ namespace Bastille.Id.Api.Controllers
     using Bastille.Id.Core.Security;
     using Bastille.Id.Models.Clients;
     using IdentityServer4.EntityFramework.DbContexts;
-    using IdentityServer4.EntityFramework.Entities;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
@@ -52,9 +51,10 @@ namespace Bastille.Id.Api.Controllers
         #endregion
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UsersController" /> class.
+        /// Initializes a new instance of the <see cref="ClientsController" /> class.
         /// </summary>
         /// <param name="appContext">The application context.</param>
+        /// <param name="configurationDbContext">Contains the configuration database context.</param>
         /// <param name="userManager">The user manager.</param>
         /// <param name="distributedCache">The distributed cache.</param>
         /// <param name="emailSender">The email sender.</param>
@@ -168,17 +168,17 @@ namespace Bastille.Id.Api.Controllers
         /// Creates a new scope for the specified client.
         /// </summary>
         /// <param name="id">The identifier.</param>
-        /// <param name="scope">The scope.</param>
+        /// <param name="model">The model.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPost("{id}/Scopes")]
-        public async Task<IActionResult> PostScope(int id, [FromBody] string scope, CancellationToken cancellationToken)
+        public async Task<IActionResult> PostScope(int id, [FromBody] ClientScopeModel model, CancellationToken cancellationToken)
         {
-            ClientScope result = null;
+            ClientScopeModel result = null;
 
-            if (!string.IsNullOrWhiteSpace(scope) && this.ModelState.IsValid)
+            if (model != null && this.ModelState.IsValid)
             {
-                result = await this.Service.AddScopeAsync(id, scope, cancellationToken);
+                result = await this.Service.AddScopeAsync(model, cancellationToken);
             }
             else
             {
@@ -193,17 +193,19 @@ namespace Bastille.Id.Api.Controllers
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <param name="scopeId">The scope identifier.</param>
-        /// <param name="scope">The scope.</param>
+        /// <param name="model">The model.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPut("{id}/Scopes/{scopeId}")]
-        public async Task<IActionResult> PutScope(int id, int scopeId, [FromBody] string scope, CancellationToken cancellationToken)
+        public async Task<IActionResult> PutScope(int id, int scopeId, [FromBody] ClientScopeModel model, CancellationToken cancellationToken)
         {
-            ClientScope scopeToUpdate = null;
+            ClientScopeModel scopeToUpdate = null;
 
-            if (scope != null && this.ModelState.IsValid)
+            if (model != null && this.ModelState.IsValid)
             {
-                scopeToUpdate = await this.Service.UpdateScopeAsync(id, scopeId, scope, cancellationToken);
+                model.Id = scopeId;
+                model.ClientId = id;
+                scopeToUpdate = await this.Service.UpdateScopeAsync(model, cancellationToken);
             }
             else
             {
@@ -243,13 +245,14 @@ namespace Bastille.Id.Api.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPost("{id}/Secrets")]
-        public async Task<IActionResult> PostSecret(int id, [FromBody] ClientSecret model, CancellationToken cancellationToken)
+        public async Task<IActionResult> PostSecret(int id, [FromBody] ClientSecretModel model, CancellationToken cancellationToken)
         {
-            ClientSecret result = null;
+            ClientSecretModel result = null;
 
             if (model != null && this.ModelState.IsValid)
             {
-                result = await this.Service.AddSecretAsync(id, model, cancellationToken);
+                model.ClientId = id;
+                result = await this.Service.AddSecretAsync(model, cancellationToken);
             }
             else
             {
@@ -268,14 +271,15 @@ namespace Bastille.Id.Api.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPut("{id}/Secrets/{secretId}")]
-        public async Task<IActionResult> PutSecret(int id, int secretId, [FromBody] ClientSecret model, CancellationToken cancellationToken)
+        public async Task<IActionResult> PutSecret(int id, int secretId, [FromBody] ClientSecretModel model, CancellationToken cancellationToken)
         {
-            ClientSecret secretToUpdate = null;
+            ClientSecretModel secretToUpdate = null;
 
             if (model != null && this.ModelState.IsValid)
             {
                 model.Id = secretId;
-                secretToUpdate = await this.Service.UpdateSecretAsync(id, model, cancellationToken);
+                model.ClientId = id;
+                secretToUpdate = await this.Service.UpdateSecretAsync(model, cancellationToken);
             }
             else
             {
@@ -311,17 +315,18 @@ namespace Bastille.Id.Api.Controllers
         /// Creates a redirect for the specified client.
         /// </summary>
         /// <param name="id">The identifier.</param>
-        /// <param name="redirectUri">The redirect URI.</param>
+        /// <param name="model">The redirect model.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPost("{id}/Redirects")]
-        public async Task<IActionResult> PostRedirect(int id, [FromBody] string redirectUri, CancellationToken cancellationToken)
+        public async Task<IActionResult> PostRedirect(int id, [FromBody] ClientRedirectUriModel model, CancellationToken cancellationToken)
         {
-            ClientRedirectUri result = null;
+            ClientRedirectUriModel result = null;
 
-            if (!string.IsNullOrWhiteSpace(redirectUri) && this.ModelState.IsValid)
+            if (model != null && this.ModelState.IsValid)
             {
-                result = await this.Service.AddRedirectAsync(id, redirectUri, cancellationToken);
+                model.ClientId = id;
+                result = await this.Service.AddRedirectAsync(model, cancellationToken);
             }
             else
             {
@@ -340,14 +345,15 @@ namespace Bastille.Id.Api.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPut("{id}/Redirects/{redirectId}")]
-        public async Task<IActionResult> PutRedirect(int id, int redirectId, [FromBody] ClientRedirectUri model, CancellationToken cancellationToken)
+        public async Task<IActionResult> PutRedirect(int id, int redirectId, [FromBody] ClientRedirectUriModel model, CancellationToken cancellationToken)
         {
-            ClientRedirectUri redirectToUpdate = null;
+            ClientRedirectUriModel redirectToUpdate = null;
 
             if (model != null && this.ModelState.IsValid)
             {
+                model.ClientId = id;
                 model.Id = redirectId;
-                redirectToUpdate = await this.Service.UpdateRedirectAsync(id, model, cancellationToken);
+                redirectToUpdate = await this.Service.UpdateRedirectAsync(model, cancellationToken);
             }
             else
             {
@@ -383,17 +389,18 @@ namespace Bastille.Id.Api.Controllers
         /// Creates a new allowed origin for the specified client.
         /// </summary>
         /// <param name="id">The identifier.</param>
-        /// <param name="originUri">The origin URI.</param>
+        /// <param name="model">The origin model.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPost("{id}/Origins")]
-        public async Task<IActionResult> PostOrigin(int id, [FromBody] string originUri, CancellationToken cancellationToken)
+        public async Task<IActionResult> PostOrigin(int id, [FromBody] ClientCorsOriginModel model, CancellationToken cancellationToken)
         {
-            ClientCorsOrigin result = null;
+            ClientCorsOriginModel result = null;
 
-            if (!string.IsNullOrWhiteSpace(originUri) && this.ModelState.IsValid)
+            if (model != null && this.ModelState.IsValid)
             {
-                result = await this.Service.AddOriginAsync(id, originUri, cancellationToken);
+                model.ClientId = id;
+                result = await this.Service.AddOriginAsync(model, cancellationToken);
             }
             else
             {
@@ -408,18 +415,19 @@ namespace Bastille.Id.Api.Controllers
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <param name="originId">The origin identifier.</param>
-        /// <param name="originUri">The origin URI.</param>
+        /// <param name="model">The origin model.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPut("{id}/Origins/{originId}")]
-        public async Task<IActionResult> PutOrigin(int id, int originId, [FromBody] ClientCorsOrigin model, CancellationToken cancellationToken)
+        public async Task<IActionResult> PutOrigin(int id, int originId, [FromBody] ClientCorsOriginModel model, CancellationToken cancellationToken)
         {
-            ClientCorsOrigin originToUpdate = null;
+            ClientCorsOriginModel originToUpdate = null;
 
             if (model != null && this.ModelState.IsValid)
             {
                 model.Id = originId;
-                originToUpdate = await this.Service.UpdateOriginAsync(id, model, cancellationToken);
+                model.ClientId = id;
+                originToUpdate = await this.Service.UpdateOriginAsync(model, cancellationToken);
             }
             else
             {
@@ -455,17 +463,18 @@ namespace Bastille.Id.Api.Controllers
         /// Creates a new Grant Type for the specified client.
         /// </summary>
         /// <param name="id">The identifier.</param>
-        /// <param name="grantType">Type of the grant.</param>
+        /// <param name="model">The grant model.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPost("{id}/GrantTypes")]
-        public async Task<IActionResult> PostGrantType(int id, [FromBody] string grantType, CancellationToken cancellationToken)
+        public async Task<IActionResult> PostGrantType(int id, [FromBody] ClientGrantTypeModel model, CancellationToken cancellationToken)
         {
-            ClientGrantType result = null;
+            ClientGrantTypeModel result = null;
 
-            if (!string.IsNullOrWhiteSpace(grantType) && this.ModelState.IsValid)
+            if (model != null && this.ModelState.IsValid)
             {
-                result = await this.Service.AddGrantTypeAsync(id, grantType, cancellationToken);
+                model.ClientId = id;
+                result = await this.Service.AddGrantTypeAsync(model, cancellationToken);
             }
             else
             {
@@ -484,14 +493,15 @@ namespace Bastille.Id.Api.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPut("{id}/GrantTypes/{grantTypeId}")]
-        public async Task<IActionResult> PutGrantType(int id, int grantTypeId, [FromBody] ClientGrantType model, CancellationToken cancellationToken)
+        public async Task<IActionResult> PutGrantType(int id, int grantTypeId, [FromBody] ClientGrantTypeModel model, CancellationToken cancellationToken)
         {
-            ClientGrantType grantTypeToUpdate = null;
+            ClientGrantTypeModel grantTypeToUpdate = null;
 
             if (model != null && this.ModelState.IsValid)
             {
+                model.ClientId = id;
                 model.Id = grantTypeId;
-                grantTypeToUpdate = await this.Service.UpdateGrantTypeAsync(id, model, cancellationToken);
+                grantTypeToUpdate = await this.Service.UpdateGrantTypeAsync(model, cancellationToken);
             }
             else
             {
@@ -527,17 +537,18 @@ namespace Bastille.Id.Api.Controllers
         /// Creates a new Logout Redirect for the specified client.
         /// </summary>
         /// <param name="id">The identifier.</param>
-        /// <param name="logoutUri">The logout URI.</param>
+        /// <param name="model">The logout URI model.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPost("{id}/Logouts")]
-        public async Task<IActionResult> PostLogout(int id, [FromBody] string logoutUri, CancellationToken cancellationToken)
+        public async Task<IActionResult> PostLogout(int id, [FromBody] ClientLogoutRedirectUriModel model, CancellationToken cancellationToken)
         {
-            ClientPostLogoutRedirectUri result = null;
+            ClientLogoutRedirectUriModel result = null;
 
-            if (!string.IsNullOrWhiteSpace(logoutUri) && this.ModelState.IsValid)
+            if (model != null && this.ModelState.IsValid)
             {
-                result = await this.Service.AddPostLogoutRedirectAsync(id, logoutUri, cancellationToken);
+                model.ClientId = id;
+                result = await this.Service.AddPostLogoutRedirectAsync(model, cancellationToken);
             }
             else
             {
@@ -556,14 +567,15 @@ namespace Bastille.Id.Api.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPut("{id}/Logouts/{logoutId}")]
-        public async Task<IActionResult> PutLogout(int id, int logoutId, [FromBody] ClientPostLogoutRedirectUri model, CancellationToken cancellationToken)
+        public async Task<IActionResult> PutLogout(int id, int logoutId, [FromBody] ClientLogoutRedirectUriModel model, CancellationToken cancellationToken)
         {
-            ClientPostLogoutRedirectUri logoutToUpdate = null;
+            ClientLogoutRedirectUriModel logoutToUpdate = null;
 
             if (model != null && this.ModelState.IsValid)
             {
+                model.ClientId = id;
                 model.Id = logoutId;
-                logoutToUpdate = await this.Service.UpdatePostLogoutRedirectTypeAsync(id, model, cancellationToken);
+                logoutToUpdate = await this.Service.UpdatePostLogoutRedirectTypeAsync(model, cancellationToken);
             }
             else
             {
@@ -603,13 +615,13 @@ namespace Bastille.Id.Api.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPost("{id}/Properties")]
-        public async Task<IActionResult> PostProperty(int id, [FromBody] ClientProperty model, CancellationToken cancellationToken)
+        public async Task<IActionResult> PostProperty(int id, [FromBody] ClientPropertyModel model, CancellationToken cancellationToken)
         {
-            ClientProperty result = null;
+            ClientPropertyModel result = null;
 
             if (model != null && this.ModelState.IsValid)
             {
-                result = await this.Service.AddPropertyAsync(id, model, cancellationToken);
+                result = await this.Service.AddPropertyAsync(model, cancellationToken);
             }
             else
             {
@@ -628,14 +640,15 @@ namespace Bastille.Id.Api.Controllers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         [HttpPut("{id}/Properties/{propertyId}")]
-        public async Task<IActionResult> PutProperty(int id, int propertyId, [FromBody] ClientProperty model, CancellationToken cancellationToken)
+        public async Task<IActionResult> PutProperty(int id, int propertyId, [FromBody] ClientPropertyModel model, CancellationToken cancellationToken)
         {
-            ClientProperty propertyToUpdate = null;
+            ClientPropertyModel propertyToUpdate = null;
 
             if (model != null && this.ModelState.IsValid)
             {
+                model.ClientId = id;
                 model.Id = propertyId;
-                propertyToUpdate = await this.Service.UpdatePropertyAsync(id, model, cancellationToken);
+                propertyToUpdate = await this.Service.UpdatePropertyAsync(model, cancellationToken);
             }
             else
             {

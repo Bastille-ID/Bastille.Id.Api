@@ -65,5 +65,11 @@ namespace Bastille.Id.Api.Common.Configuration
         /// </summary>
         /// <value>The JWT time skew in minutes.</value>
         public int JwtTimeSkewInMinutes { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to enable swagger documentation.
+        /// </summary>
+        /// <value>If true the swagger documentation pages are enabled.</value>
+        public bool EnableDocs { get; set; }
     }
 }

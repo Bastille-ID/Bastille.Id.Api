@@ -73,6 +73,7 @@ namespace Bastille.Id.Server.Controllers.Api
         /// <summary>
         /// Gets all available active groups.
         /// </summary>
+        /// <param name="filter">Contains the query filter model.</param>
         /// <param name="cancellationToken">Contains a cancellation token.</param>
         /// <returns>Returns the action result for the API request.</returns>
         [HttpGet]

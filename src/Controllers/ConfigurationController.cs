@@ -58,8 +58,6 @@ namespace Bastille.Id.Api.Controllers
         /// <param name="configurationDbContext"></param>
         /// <param name="userManager">The user manager.</param>
         /// <param name="distributedCache">The distributed cache.</param>
-        /// <param name="clientStore">Contains the client store.</param>
-        /// <param name="resourceStore">Contains the resource store.</param>
         /// <param name="emailSender">The email sender.</param>
         /// <param name="logger">The logger.</param>
         public ConfigurationController(ApplicationContext<ApplicationSettings> appContext, ConfigurationDbContext configurationDbContext,

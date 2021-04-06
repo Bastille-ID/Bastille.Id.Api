@@ -24,8 +24,13 @@
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="Bastille.Id.Core" Version="1.0.1" />
+    <PackageReference Include="Bastille.Id.Core" Version="1.0.3" />
     <PackageReference Include="IdentityModel" Version="5.1.0" />
     <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="3.0.1" />
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.17.0" />
@@ -44,6 +49,8 @@
     <PackageReference Include="Serilog.Settings.Configuration" Version="3.1.0" />
     <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="3.1.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="6.1.1" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
     <PackageReference Include="Talegen.Common.Models" Version="1.0.2" />
     <PackageReference Include="Vasont.AspnetCore.RedisClient" Version="1.0.3" />

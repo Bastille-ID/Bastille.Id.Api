@@ -64,7 +64,11 @@ namespace Bastille.Id.Api.Common.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiControllerBase" /> class.
         /// </summary>
-        /// <param name="dataContext">Contains an instance of the application context.</param>
+        /// <param name="appContext">The application context.</param>
+        /// <param name="userManager">The user manager.</param>
+        /// <param name="cache">The distributed cache.</param>
+        /// <param name="messageSender">The email sender.</param>
+        /// <param name="logger">The logger.</param>
         protected ApiControllerBase(ApplicationContext<ApplicationSettings> appContext, UserManager<User> userManager,
             IAdvancedDistributedCache cache, IMessageSender messageSender, ILogger<ApiControllerBase> logger)
         {

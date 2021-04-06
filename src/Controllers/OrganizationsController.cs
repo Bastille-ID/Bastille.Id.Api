@@ -73,6 +73,7 @@ namespace Bastille.Id.Api.Controllers
         /// <summary>
         /// Gets all available organizations
         /// </summary>
+        /// <param name="filter">Contains the query filter model.</param>
         /// <param name="cancellationToken">Contains a cancellation token.</param>
         /// <returns>Returns the action result for the API request.</returns>
         [HttpGet]

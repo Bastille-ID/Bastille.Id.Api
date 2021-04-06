@@ -41,8 +41,6 @@ namespace Bastille.Id.Server.Controllers.Api
         /// <param name="appContext">The application context.</param>
         /// <param name="userManager">The user manager.</param>
         /// <param name="distributedCache">The distributed cache.</param>
-        /// <param name="clientStore">Contains an instance of the client store.</param>
-        /// <param name="resourceStore">Contains an instance of the resource store.</param>
         /// <param name="emailSender">The email sender.</param>
         /// <param name="logger">The logger.</param>
         public LogsController(ApplicationContext<ApplicationSettings> appContext,

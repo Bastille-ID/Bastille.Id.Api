@@ -19,6 +19,7 @@ namespace Bastille.Id.Api
     using System;
     using System.IO;
     using System.Linq;
+    using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
     using Bastille.Id.Api.Common.Configuration;
@@ -202,6 +203,18 @@ namespace Bastille.Id.Api
 
             // setup signal-R notifications
             ConfigureServiceSignalR(services, this.Settings, this.RedisConnectionString, development);
+
+            // setup swagger
+            if (this.Settings.Advanced.EnableDocs)
+            {
+                services.AddSwaggerGen(options =>
+                {
+                    // Set the comments path for the Swagger JSON and UI.
+                    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                    options.IncludeXmlComments(xmlPath);
+                });
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -224,6 +237,17 @@ namespace Bastille.Id.Api
             }
 
             app.UseCors(DefaultCorsPolicy);
+
+            if (this.Settings.Advanced.EnableDocs)
+            {
+                app.UseSwagger();
+
+                // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", Resources.ApplicationName);
+                });
+            }
 
             app.UseRouting();
 
